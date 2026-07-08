@@ -35,7 +35,7 @@ export default function UploadPage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold mb-2">📸 上传照片</h1>
-      <p className="text-zinc-500 text-sm mb-8">记录兄弟们在一起的每个瞬间</p>
+      <p className="text-zinc-500 text-sm mb-8">记录一起经历的每个瞬间</p>
 
       <form
         onSubmit={handleSubmit}

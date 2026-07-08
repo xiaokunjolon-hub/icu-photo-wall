@@ -38,7 +38,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.name = user.name || "兄弟";
+        token.name = user.name || "成员";
         token.sub = user.id; // 用户名 id
       }
       return token;

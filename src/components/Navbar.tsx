@@ -14,7 +14,7 @@ export default function Navbar() {
   const links = [
     { href: "/", label: "🏠 主页" },
     { href: "/history", label: "📜 历史" },
-    { href: "/members", label: "👥 兄弟" },
+    { href: "/members", label: "👥 成员" },
     { href: "/upload", label: "📸 上传" },
   ];
 
@@ -57,7 +57,7 @@ export default function Navbar() {
 
         {/* 右侧用户 */}
         <div className="flex items-center gap-3 text-sm text-zinc-400">
-          <span>{session?.user?.name || "兄弟"}</span>
+          <span>{session?.user?.name || "成员"}</span>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="text-zinc-500 hover:text-red-400 transition-colors"

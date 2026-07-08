@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ICU 兄弟",
-  description: "ICU 兄弟 — 兄弟照片墙",
+  title: "ICU",
+  description: "ICU — 照片墙",
   icons: { icon: "/favicon.ico" },
 };
 

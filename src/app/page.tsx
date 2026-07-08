@@ -1,26 +1,17 @@
 export default function HomePage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-20">
-      {/* Hero 区域 */}
+      {/* Logo */}
       <div className="text-center mb-20">
-        {/* ICU Logo */}
-        <div className="mb-8">
-          <img
-            src="/icu-logo-light.png"
-            alt="ICU"
-            className="h-36 mx-auto"
-          />
-        </div>
-
-        <h1 className="text-2xl font-bold mb-3">兄弟们的专属地盘</h1>
-        <p className="text-zinc-500 max-w-md mx-auto leading-relaxed">
-          这里记录着兄弟们在一起的每一个瞬间——那些只有我们懂的梗和回忆。
-        </p>
+        <img
+          src="/icu-logo-light.png"
+          alt="ICU"
+          className="h-36 mx-auto"
+        />
       </div>
 
-      {/* 快捷入口卡片 */}
+      {/* 快捷入口 */}
       <div className="grid sm:grid-cols-3 gap-4 max-w-xl mx-auto">
-        {/* 历史时间线 */}
         <a
           href="/history"
           className="block p-6 rounded-xl transition-all hover:scale-[1.02]"
@@ -30,11 +21,10 @@ export default function HomePage() {
           }}
         >
           <div className="text-3xl mb-3">📜</div>
-          <h3 className="font-bold mb-1">历史照片</h3>
-          <p className="text-zinc-500 text-sm">时间线，每一张都有故事</p>
+          <h3 className="font-bold mb-1">历史</h3>
+          <p className="text-zinc-500 text-sm">照片时间线</p>
         </a>
 
-        {/* 成员 */}
         <a
           href="/members"
           className="block p-6 rounded-xl transition-all hover:scale-[1.02]"
@@ -44,11 +34,10 @@ export default function HomePage() {
           }}
         >
           <div className="text-3xl mb-3">👥</div>
-          <h3 className="font-bold mb-1">兄弟们</h3>
-          <p className="text-zinc-500 text-sm">7 个人，互相留言</p>
+          <h3 className="font-bold mb-1">成员</h3>
+          <p className="text-zinc-500 text-sm">7 个人 · 留言板</p>
         </a>
 
-        {/* 上传 */}
         <a
           href="/upload"
           className="block p-6 rounded-xl transition-all hover:scale-[1.02]"
@@ -58,16 +47,9 @@ export default function HomePage() {
           }}
         >
           <div className="text-3xl mb-3">📸</div>
-          <h3 className="font-bold mb-1">上传照片</h3>
-          <p className="text-zinc-500 text-sm">分享新回忆</p>
+          <h3 className="font-bold mb-1">上传</h3>
+          <p className="text-zinc-500 text-sm">添加照片</p>
         </a>
-      </div>
-
-      {/* 底部 */}
-      <div className="text-center mt-20">
-        <p className="text-zinc-600 text-xs">
-          ICU © {new Date().getFullYear()} · 兄弟们的地盘
-        </p>
       </div>
     </div>
   );

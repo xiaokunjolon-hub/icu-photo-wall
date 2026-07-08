@@ -37,7 +37,7 @@ export default async function MembersPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-2">👥 兄弟们</h1>
+      <h1 className="text-2xl font-bold mb-2">👥 成员</h1>
       <p className="text-zinc-500 text-sm mb-8">
         7 个人 · 点击名字看留言、写留言
       </p>
