@@ -18,11 +18,11 @@ interface Photo {
 export default async function HistoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; uploader?: string }>;
+  searchParams: Promise<{ q?: string; uploader?: string; from?: string; to?: string }>;
 }) {
   const session = await auth();
   const currentUser = session?.user?.name || "";
-  const { q, uploader } = await searchParams;
+  const { q, uploader, from, to } = await searchParams;
 
   if (!isSupabaseConfigured()) {
     return (
@@ -47,6 +47,12 @@ export default async function HistoryPage({
 
   // 内存搜索（小数据量足够）
   let filtered = allPhotos;
+  if (from) {
+    filtered = filtered.filter((p) => p.event_date >= from);
+  }
+  if (to) {
+    filtered = filtered.filter((p) => p.event_date <= to);
+  }
   if (uploader) {
     filtered = filtered.filter((p) => p.uploaded_by === uploader);
   }
@@ -68,7 +74,7 @@ export default async function HistoryPage({
     <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16">
       <h1 className="text-2xl sm:text-3xl font-bold mb-6">📜 历史</h1>
 
-      <SearchBar uploaders={uploaders} currentQ={q} currentUploader={uploader} />
+      <SearchBar uploaders={uploaders} currentQ={q} currentUploader={uploader} currentFrom={from} currentTo={to} />
 
       {filtered.length === 0 ? (
         <EmptyState hasSearch={!!q || !!uploader} />
