@@ -2,10 +2,24 @@
 
 import { auth } from "@/auth";
 import { createServerClient } from "@/lib/supabase";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-/** 上传照片 */
+// R2 客户端（兼容 S3 API）
+const r2 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+  forcePathStyle: true,
+});
+
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL!;
+
+/** 上传照片 → R2 存储 + Supabase 数据库 */
 export async function uploadPhoto(formData: FormData) {
   const session = await auth();
   if (!session?.user?.name) {
@@ -18,45 +32,33 @@ export async function uploadPhoto(formData: FormData) {
   const event_date = formData.get("event_date") as string;
   const description = formData.get("description") as string;
 
-  if (!file || file.size === 0) {
-    throw new Error("请选择照片");
-  }
-  if (!title) {
-    throw new Error("请填写标题");
-  }
-  if (!event_date) {
-    throw new Error("请选择日期");
-  }
+  if (!file || file.size === 0) throw new Error("请选择照片");
+  if (!title) throw new Error("请填写标题");
+  if (!event_date) throw new Error("请选择日期");
 
-  const supabase = createServerClient();
-
-  // 1. 上传照片到 Supabase Storage
+  // 1. 上传到 Cloudflare R2
   const fileExt = file.name.split(".").pop() || "jpg";
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
-  const fileBuffer = await file.arrayBuffer();
+  const fileName = `photos/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+  const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-  const { error: uploadError } = await supabase.storage
-    .from("photos")
-    .upload(fileName, fileBuffer, {
-      contentType: file.type,
-      upsert: false,
-    });
+  await r2.send(
+    new PutObjectCommand({
+      Bucket: "icu-photos",
+      Key: fileName,
+      Body: fileBuffer,
+      ContentType: file.type,
+    })
+  );
 
-  if (uploadError) {
-    throw new Error(`上传失败: ${uploadError.message}`);
-  }
+  const imageUrl = `${R2_PUBLIC_URL}/${fileName}`;
 
-  // 2. 获取公开链接
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("photos").getPublicUrl(fileName);
-
-  // 3. 写入数据库
+  // 2. 写入 Supabase 数据库
+  const supabase = createServerClient();
   const { error: dbError } = await supabase.from("photos").insert({
     title,
     description,
     location: location || "",
-    image_url: publicUrl,
+    image_url: imageUrl,
     event_date,
     uploaded_by: session.user.name,
   });
@@ -69,7 +71,7 @@ export async function uploadPhoto(formData: FormData) {
   redirect("/history");
 }
 
-/** 发送留言 */
+/** 发送留言 → Supabase */
 export async function sendMessage(formData: FormData) {
   const session = await auth();
   if (!session?.user?.name) {
@@ -80,12 +82,9 @@ export async function sendMessage(formData: FormData) {
   const content = formData.get("content") as string;
   const isAnonymous = formData.get("is_anonymous") === "true";
 
-  if (!toUser || !content) {
-    throw new Error("请填写完整");
-  }
+  if (!toUser || !content) throw new Error("请填写完整");
 
   const supabase = createServerClient();
-
   const { error } = await supabase.from("messages").insert({
     from_user: isAnonymous ? "匿名" : session.user.name,
     to_user: toUser,
@@ -93,9 +92,7 @@ export async function sendMessage(formData: FormData) {
     is_anonymous: isAnonymous,
   });
 
-  if (error) {
-    throw new Error(`留言失败: ${error.message}`);
-  }
+  if (error) throw new Error(`留言失败: ${error.message}`);
 
   revalidatePath("/members");
   revalidatePath("/");
