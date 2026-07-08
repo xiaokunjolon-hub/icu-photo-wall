@@ -13,10 +13,10 @@ export default function Navbar() {
   if (pathname === "/login") return null;
 
   const links = [
-    { href: "/", label: "🏠" },
-    { href: "/history", label: "📜" },
-    { href: "/members", label: "👥" },
-    { href: "/upload", label: "📸" },
+    { href: "/", label: "🏠 主页" },
+    { href: "/history", label: "📜 历史" },
+    { href: "/members", label: "👥 成员" },
+    { href: "/upload", label: "📸 上传" },
   ];
 
   return (
