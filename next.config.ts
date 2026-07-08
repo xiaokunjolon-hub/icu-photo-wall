@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // 允许上传最大 10MB 的照片
+  serverActions: {
+    bodySizeLimit: "10mb",
+  },
 };
 
 export default nextConfig;
