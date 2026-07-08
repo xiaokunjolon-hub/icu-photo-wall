@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { createServerClient, isSupabaseConfigured } from "@/lib/supabase";
+import SearchBar from "./SearchBar";
 
 export const dynamic = "force-dynamic";
 
@@ -14,9 +15,14 @@ interface Photo {
   created_at: string;
 }
 
-export default async function HistoryPage() {
+export default async function HistoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; uploader?: string }>;
+}) {
   const session = await auth();
   const currentUser = session?.user?.name || "";
+  const { q, uploader } = await searchParams;
 
   if (!isSupabaseConfigured()) {
     return (
@@ -27,27 +33,47 @@ export default async function HistoryPage() {
     );
   }
 
-  let photoList: Photo[] = [];
+  let allPhotos: Photo[] = [];
   try {
     const supabase = createServerClient();
     const { data } = await supabase
       .from("photos")
       .select("*")
       .order("event_date", { ascending: false });
-    photoList = data || [];
+    allPhotos = data || [];
   } catch (e) {
     console.error(e);
   }
 
+  // 内存搜索（小数据量足够）
+  let filtered = allPhotos;
+  if (uploader) {
+    filtered = filtered.filter((p) => p.uploaded_by === uploader);
+  }
+  if (q) {
+    const kw = q.toLowerCase();
+    filtered = filtered.filter(
+      (p) =>
+        p.title.toLowerCase().includes(kw) ||
+        (p.description || "").toLowerCase().includes(kw) ||
+        (p.location || "").toLowerCase().includes(kw) ||
+        p.uploaded_by.toLowerCase().includes(kw)
+    );
+  }
+
+  // 收集所有上传人
+  const uploaders = [...new Set(allPhotos.map((p) => p.uploaded_by).filter(Boolean))];
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-3">📜 历史</h1>
-      <p className="text-zinc-500 text-sm mb-8">照片时间线</p>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6">📜 历史</h1>
 
-      {photoList.length === 0 ? (
-        <EmptyState />
+      <SearchBar uploaders={uploaders} currentQ={q} currentUploader={uploader} />
+
+      {filtered.length === 0 ? (
+        <EmptyState hasSearch={!!q || !!uploader} />
       ) : (
-        <Timeline photos={photoList} currentUser={currentUser} />
+        <Timeline photos={filtered} currentUser={currentUser} />
       )}
     </div>
   );
@@ -124,13 +150,13 @@ function PhotoCard({ photo, currentUser }: { photo: Photo; currentUser: string }
   );
 }
 
-function EmptyState() {
+function EmptyState({ hasSearch }: { hasSearch?: boolean }) {
   return (
     <div className="text-center py-16 sm:py-20 rounded-xl"
       style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
-      <div className="text-4xl sm:text-5xl mb-4">📸</div>
-      <h3 className="text-lg font-bold mb-2">还没有照片</h3>
-      <p className="text-zinc-500 text-sm">去上传第一张吧</p>
+      <div className="text-4xl sm:text-5xl mb-4">{hasSearch ? "🔍" : "📸"}</div>
+      <h3 className="text-lg font-bold mb-2">{hasSearch ? "没找到匹配的照片" : "还没有照片"}</h3>
+      <p className="text-zinc-500 text-sm">{hasSearch ? "换个关键词试试" : "去上传第一张吧"}</p>
     </div>
   );
 }
