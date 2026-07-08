@@ -85,7 +85,6 @@ export default function UploadPage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
       <h1 className="text-xl sm:text-2xl font-bold mb-1">📸 上传照片</h1>
-      <p className="text-zinc-500 text-sm mb-6">可一次选多张</p>
 
       <form
         onSubmit={handleSubmit}
