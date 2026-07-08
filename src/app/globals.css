@@ -1,8 +1,22 @@
 @import "tailwindcss";
 
+/* ==========================================
+   ICU 战队照片墙 - 全局样式
+   暗黑主题 + ICU 战队红黑配色
+   ========================================== */
+
+/* 基础变量 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary: #09090b;
+  --bg-secondary: #121217;
+  --bg-card: #1a1a24;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --accent: #e63946;       /* ICU 红（医疗/战斗感） */
+  --accent-glow: #e6394680;
+  --border: #27272a;
+  --background: #09090b;
+  --foreground: #f4f4f5;
 }
 
 @theme inline {
@@ -12,15 +26,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 全局 */
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans, system-ui, -apple-system, sans-serif);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* 时间线竖线动画 */
+@keyframes pulse-line {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.timeline-line {
+  animation: pulse-line 3s ease-in-out infinite;
 }
