@@ -72,7 +72,7 @@ function LoginForm() {
           >
             ICU
           </div>
-          <p className="text-zinc-500 text-sm mt-3">兄弟战队 · 照片墙</p>
+          <p className="text-zinc-500 text-sm mt-3">一群兄弟 · 照片墙</p>
         </div>
 
         {/* 登录表单 */}
@@ -85,12 +85,12 @@ function LoginForm() {
           }}
         >
           {/* 用户名 */}
-          <label className="block text-sm text-zinc-400 mb-1.5">名字</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">名字（英文缩写）</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="输入你的名字"
+            placeholder="比如 zyk"
             className="w-full px-3 py-2.5 rounded-lg text-sm mb-4 outline-none transition-colors focus:ring-2"
             style={{
               background: "var(--bg-secondary)",
@@ -100,12 +100,12 @@ function LoginForm() {
           />
 
           {/* 密码 */}
-          <label className="block text-sm text-zinc-400 mb-1.5">战队密码</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">密码（生日 MMDD）</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="输入战队密码"
+            placeholder="比如 0302"
             className="w-full px-3 py-2.5 rounded-lg text-sm mb-1 outline-none transition-colors focus:ring-2"
             style={{
               background: "var(--bg-secondary)",
@@ -127,12 +127,12 @@ function LoginForm() {
               color: "#fff",
             }}
           >
-            {loading ? "验证中..." : "进入 ICU"}
+            {loading ? "验证中..." : "进入"}
           </button>
         </form>
 
         <p className="text-center text-zinc-600 text-xs mt-6">
-          ICU 战队内部站点 · 需战队密码登录
+          ICU 内部站点 · 用你的名字 + 生日登录
         </p>
       </div>
     </div>

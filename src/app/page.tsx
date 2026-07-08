@@ -17,9 +17,9 @@ export default function HomePage() {
           </span>
         </div>
 
-        <h1 className="text-2xl font-bold mb-3">兄弟战队</h1>
+        <h1 className="text-2xl font-bold mb-3">兄弟们的专属地盘</h1>
         <p className="text-zinc-500 max-w-md mx-auto leading-relaxed">
-          这里记录着 ICU 战队的每一个瞬间——战斗、欢笑、还有那些只有我们懂的梗。
+          这里记录着兄弟们在一起的每一个瞬间——那些只有我们懂的梗和回忆。
         </p>
       </div>
 
@@ -35,7 +35,7 @@ export default function HomePage() {
           }}
         >
           <div className="text-3xl mb-3">📜</div>
-          <h3 className="font-bold mb-1">ICU 历史</h3>
+          <h3 className="font-bold mb-1">历史照片墙</h3>
           <p className="text-zinc-500 text-sm">时间线照片墙，每一张都有故事</p>
         </a>
 
@@ -48,7 +48,7 @@ export default function HomePage() {
           }}
         >
           <div className="text-3xl mb-3">👥</div>
-          <h3 className="font-bold mb-1">战队成员</h3>
+          <h3 className="font-bold mb-1">兄弟成员</h3>
           <p className="text-zinc-500 text-sm">即将上线</p>
         </div>
       </div>
@@ -56,7 +56,7 @@ export default function HomePage() {
       {/* 底部 */}
       <div className="text-center mt-20">
         <p className="text-zinc-600 text-xs">
-          ICU 战队 © {new Date().getFullYear()} · 兄弟们的专属领地
+          ICU © {new Date().getFullYear()} · 兄弟们的地盘
         </p>
       </div>
     </div>

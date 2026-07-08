@@ -19,7 +19,7 @@ export default async function HistoryPage() {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16">
         <div className="mb-16">
-          <h1 className="text-3xl font-bold mb-3">📜 ICU 历史</h1>
+          <h1 className="text-3xl font-bold mb-3">📜 历史照片墙</h1>
           <p className="text-zinc-500">
             用照片和故事记录我们一起走过的路
           </p>
@@ -51,7 +51,7 @@ export default async function HistoryPage() {
     <div className="max-w-3xl mx-auto px-4 py-16">
       {/* 页面标题 */}
       <div className="mb-16">
-        <h1 className="text-3xl font-bold mb-3">📜 ICU 历史</h1>
+        <h1 className="text-3xl font-bold mb-3">📜 历史照片墙</h1>
         <p className="text-zinc-500">用照片和故事记录我们一起走过的路</p>
       </div>
 

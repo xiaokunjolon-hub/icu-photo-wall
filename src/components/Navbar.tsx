@@ -13,7 +13,7 @@ export default function Navbar() {
 
   const links = [
     { href: "/", label: "🏠 主页" },
-    { href: "/history", label: "📜 ICU 历史" },
+    { href: "/history", label: "📜 历史照片墙" },
   ];
 
   return (
@@ -39,7 +39,7 @@ export default function Navbar() {
           >
             ICU
           </span>
-          <span className="hidden sm:inline">战队</span>
+          <span className="hidden sm:inline">兄弟</span>
         </Link>
 
         {/* 中间导航 */}
@@ -66,7 +66,7 @@ export default function Navbar() {
 
         {/* 右侧用户 */}
         <div className="flex items-center gap-3 text-sm text-zinc-400">
-          <span>{session?.user?.name || "ICU 队员"}</span>
+          <span>{session?.user?.name || "兄弟"}</span>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="text-zinc-500 hover:text-red-400 transition-colors"

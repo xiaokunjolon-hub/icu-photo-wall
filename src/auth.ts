@@ -1,36 +1,48 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
+// 兄弟们的账号（用户名 → 生日密码 MMDD）
+const MEMBERS: Record<string, { password: string }> = {
+  lcy: { password: "1226" },
+  qcy: { password: "0309" },
+  lzx: { password: "0420" },
+  qjk: { password: "1223" },
+  zzy: { password: "1019" },
+  dht: { password: "0127" },
+  zyk: { password: "0302" },
+};
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
-      // 登录表单：只需密码（团队共用）
       credentials: {
         username: { label: "用户名", type: "text" },
         password: { label: "密码", type: "password" },
       },
       authorize: async (credentials) => {
-        const password = credentials?.password;
         const username =
           typeof credentials?.username === "string"
-            ? credentials.username
-            : "ICU 队员";
+            ? credentials.username.toLowerCase().trim()
+            : "";
+        const password = credentials?.password;
 
-        // 检查密码是否匹配团队密码
-        if (
-          typeof password === "string" &&
-          password === process.env.ICU_TEAM_PASSWORD
-        ) {
-          return { id: "icu-member", name: username };
+        // 查找这个用户名
+        const member = MEMBERS[username];
+        if (!member) {
+          return null; // 用户不存在
         }
 
-        // 密码错误
-        return null;
+        // 检查密码（生日 MMDD）
+        if (typeof password === "string" && password === member.password) {
+          return { id: username, name: username };
+        }
+
+        return null; // 密码错误
       },
     }),
   ],
   pages: {
-    signIn: "/login", // 自定义登录页
+    signIn: "/login",
   },
   session: {
     strategy: "jwt",
@@ -38,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.name = user.name || "ICU 队员";
+        token.name = user.name || "兄弟";
       }
       return token;
     },
