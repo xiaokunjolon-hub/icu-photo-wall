@@ -32,6 +32,9 @@ export default function UploadPage() {
     }
   };
 
+  const inputClass =
+    "w-full px-3 py-2.5 rounded-lg text-sm outline-none [color-scheme:dark]";
+
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold mb-2">📸 上传照片</h1>
@@ -47,7 +50,7 @@ export default function UploadPage() {
       >
         {/* 照片选择 */}
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">选择照片</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">照片</label>
           <input
             type="file"
             name="file"
@@ -72,8 +75,7 @@ export default function UploadPage() {
             type="text"
             name="title"
             required
-            placeholder="比如：2024年跨年聚会"
-            className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
+            className={inputClass}
             style={{
               background: "var(--bg-secondary)",
               border: "1px solid var(--border)",
@@ -89,7 +91,7 @@ export default function UploadPage() {
             type="date"
             name="event_date"
             required
-            className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
+            className={inputClass}
             style={{
               background: "var(--bg-secondary)",
               border: "1px solid var(--border)",
@@ -104,8 +106,7 @@ export default function UploadPage() {
           <input
             type="text"
             name="location"
-            placeholder="比如：太仓万达"
-            className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
+            className={inputClass}
             style={{
               background: "var(--bg-secondary)",
               border: "1px solid var(--border)",
@@ -114,13 +115,12 @@ export default function UploadPage() {
           />
         </div>
 
-        {/* 描述/备注 */}
+        {/* 描述 */}
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">详情描述</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">描述</label>
           <textarea
             name="description"
             rows={3}
-            placeholder="当时发生了什么、什么情况..."
             className="w-full px-3 py-2.5 rounded-lg text-sm outline-none resize-none"
             style={{
               background: "var(--bg-secondary)",
@@ -144,7 +144,7 @@ export default function UploadPage() {
           className="w-full py-2.5 rounded-lg text-sm font-medium transition-all disabled:opacity-40"
           style={{ background: "var(--accent)", color: "#fff" }}
         >
-          {loading ? "上传中..." : "上传照片"}
+          {loading ? "上传中..." : "上传"}
         </button>
       </form>
     </div>
