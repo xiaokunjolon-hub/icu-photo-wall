@@ -5,11 +5,13 @@ export default function HomePage() {
       <div className="text-center mb-20">
         {/* ICU Logo */}
         <div className="mb-8">
-          <img
-            src="/icu-logo.png"
-            alt="ICU"
-            className="h-36 mx-auto"
-          />
+          <div className="inline-block p-6 rounded-2xl bg-white/10 backdrop-blur">
+            <img
+              src="/icu-logo.png"
+              alt="ICU"
+              className="h-32 mx-auto"
+            />
+          </div>
         </div>
 
         <h1 className="text-2xl font-bold mb-3">兄弟们的专属地盘</h1>

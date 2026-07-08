@@ -30,7 +30,9 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* 左侧 Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <img src="/icu-logo.png" alt="ICU" className="h-9" />
+          <div className="bg-white/10 rounded-lg px-2 py-0.5">
+            <img src="/icu-logo.png" alt="ICU" className="h-8" />
+          </div>
         </Link>
 
         {/* 中间导航 */}
