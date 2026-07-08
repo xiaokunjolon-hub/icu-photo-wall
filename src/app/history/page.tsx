@@ -117,23 +117,22 @@ function PhotoCard({ photo }: { photo: Photo }) {
       }}
     >
       {/* 照片 */}
-      <div
-        className="w-full aspect-video bg-cover bg-center"
-        style={{
-          backgroundImage: photo.image_url
-            ? `url(${photo.image_url})`
-            : undefined,
-          background: photo.image_url
-            ? undefined
-            : "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
-        }}
-      >
-        {!photo.image_url && (
-          <div className="w-full h-full flex items-center justify-center text-zinc-600">
-            🖼️ 照片占位
-          </div>
-        )}
-      </div>
+      {photo.image_url ? (
+        <img
+          src={photo.image_url}
+          alt={photo.title}
+          className="w-full aspect-video object-cover"
+        />
+      ) : (
+        <div
+          className="w-full aspect-video flex items-center justify-center text-zinc-600"
+          style={{
+            background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
+          }}
+        >
+          🖼️ 照片占位
+        </div>
+      )}
 
       {/* 信息区 */}
       <div className="p-5">

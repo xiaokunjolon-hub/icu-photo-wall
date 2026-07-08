@@ -50,8 +50,8 @@ export default function UploadPage() {
 
   // 选择建议
   const selectPlace = (place: PlaceSuggestion) => {
-    const fullAddress = [place.district, place.address].filter(Boolean).join("");
-    setLocation(fullAddress || place.name);
+    // name 是地点名（如"上海师范大学天华学院"），district+address 是详细地址
+    setLocation(place.name);
     setShowSuggestions(false);
   };
 
