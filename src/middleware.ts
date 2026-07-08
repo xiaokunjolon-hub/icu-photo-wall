@@ -6,8 +6,14 @@ export default auth((req) => {
   const isLoginPage = req.nextUrl.pathname.startsWith("/login");
   const isApi = req.nextUrl.pathname.startsWith("/api");
 
+  // 静态文件不拦截
+  const isStatic =
+    /\.(png|jpg|jpeg|gif|svg|webp|ico|css|js|woff2?|ttf|eot)$/.test(
+      req.nextUrl.pathname
+    );
+
   // 未登录访问非登录页 → 跳到登录页
-  if (!isLoggedIn && !isLoginPage && !isApi) {
+  if (!isLoggedIn && !isLoginPage && !isApi && !isStatic) {
     const loginUrl = new URL("/login", req.nextUrl.origin);
     loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
     return Response.redirect(loginUrl);
@@ -28,6 +34,6 @@ export const config = {
      * - _next/image (图片优化)
      * - favicon.ico (图标)
      */
-    "/((?!_next/static|_next/image|favicon\\.ico|\\.png|\\.jpg|\\.jpeg|\\.svg|\\.gif|\\.webp|\\.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
