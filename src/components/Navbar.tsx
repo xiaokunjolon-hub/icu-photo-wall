@@ -3,19 +3,20 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // 登录页不显示导航栏
   if (pathname === "/login") return null;
 
   const links = [
-    { href: "/", label: "🏠 主页" },
-    { href: "/history", label: "📜 历史" },
-    { href: "/members", label: "👥 成员" },
-    { href: "/upload", label: "📸 上传" },
+    { href: "/", label: "🏠" },
+    { href: "/history", label: "📜" },
+    { href: "/members", label: "👥" },
+    { href: "/upload", label: "📸" },
   ];
 
   return (
@@ -27,19 +28,19 @@ export default function Navbar() {
       }}
       className="sticky top-0 z-50"
     >
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        {/* 左侧 Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <img src="/icu-logo-light.png" alt="ICU" className="h-9" />
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 h-14 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="shrink-0">
+          <img src="/icu-logo-light.png" alt="ICU" className="h-8 sm:h-9" />
         </Link>
 
-        {/* 中间导航 */}
-        <div className="flex gap-6">
+        {/* 桌面导航 */}
+        <div className="hidden sm:flex gap-4">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`transition-colors ${
+              className={`transition-colors text-sm ${
                 pathname === link.href
                   ? "text-white font-medium"
                   : "text-zinc-400 hover:text-white"
@@ -50,22 +51,53 @@ export default function Navbar() {
                   : {}
               }
             >
-              <span className="h-14 flex items-center text-sm">{link.label}</span>
+              <span className="h-14 flex items-center">{link.label}</span>
             </Link>
           ))}
         </div>
 
-        {/* 右侧用户 */}
-        <div className="flex items-center gap-3 text-sm text-zinc-400">
-          <span>{session?.user?.name || "成员"}</span>
+        {/* 右侧 */}
+        <div className="flex items-center gap-2 sm:gap-3 text-sm text-zinc-400">
+          <span className="hidden sm:inline">{session?.user?.name || ""}</span>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="text-zinc-500 hover:text-red-400 transition-colors"
+            className="text-zinc-500 hover:text-red-400 transition-colors text-sm"
           >
             退出
           </button>
+          {/* 汉堡菜单 */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="sm:hidden text-zinc-400 text-xl ml-1"
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
         </div>
       </div>
+
+      {/* 移动端下拉菜单 */}
+      {menuOpen && (
+        <div
+          className="sm:hidden px-4 pb-3 space-y-1"
+          style={{ background: "rgba(18, 18, 23, 0.95)" }}
+        >
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className={`block py-2 text-sm ${
+                pathname === link.href ? "text-white" : "text-zinc-400"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div className="text-zinc-600 text-xs pt-1">
+            {session?.user?.name}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

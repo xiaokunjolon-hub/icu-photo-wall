@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
 import { createServerClient, isSupabaseConfigured } from "@/lib/supabase";
-import { MEMBERS_LIST, getMember } from "@/lib/members";
+import { MEMBERS_LIST } from "@/lib/members";
 import { sendMessage } from "@/app/actions";
-import { revalidatePath } from "next/cache";
+import { DeleteMessageButton, EmojiPicker } from "@/components/DeleteButtons";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,6 @@ export default async function MembersPage() {
   const session = await auth();
   const currentUser = session?.user?.name || "";
 
-  // 获取所有留言
   let allMessages: Message[] = [];
   if (isSupabaseConfigured()) {
     try {
@@ -28,125 +27,96 @@ export default async function MembersPage() {
         .from("messages")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(200);
+        .limit(500);
       allMessages = data || [];
-    } catch (e) {
-      // 表还没建，忽略
-    }
+    } catch {}
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-2">👥 成员</h1>
-      <p className="text-zinc-500 text-sm mb-8">
-        7 个人 · 点击名字看留言、写留言
-      </p>
+    <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12">
+      <h1 className="text-xl sm:text-2xl font-bold mb-1">👥 成员</h1>
+      <p className="text-zinc-500 text-sm mb-6 sm:mb-8">7 个人 · 留言板</p>
 
       {/* 成员网格 */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-12 sm:mb-16">
         {MEMBERS_LIST.map((member) => {
-          const messages = allMessages.filter((m) => m.to_user === member.id);
-          const latestMsg = messages[0];
-
+          const msgs = allMessages.filter((m) => m.to_user === member.id);
+          const latest = msgs[0];
           return (
-            <div key={member.id}>
-              <a
-                href={`/members#msg-${member.id}`}
-                className="block p-5 rounded-xl transition-all hover:scale-[1.02]"
-                style={{
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  {/* 头像 */}
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm uppercase"
-                    style={{ background: "var(--accent)", color: "#fff" }}
-                  >
-                    {member.id[0]}
-                  </div>
-                  <div>
-                    <div className="font-bold">{member.id}</div>
-                    <div className="text-xs text-zinc-500">
-                      🎂 {member.birthday}
-                    </div>
-                  </div>
+            <a key={member.id} href={`/members#msg-${member.id}`}
+              className="block p-3 sm:p-5 rounded-xl transition-all hover:scale-[1.02]"
+              style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm uppercase"
+                  style={{ background: "var(--accent)", color: "#fff" }}>{member.id[0]}</div>
+                <div className="min-w-0">
+                  <div className="font-bold text-sm sm:text-base truncate">{member.id}</div>
+                  <div className="text-xs text-zinc-500">🎂 {member.birthday}</div>
                 </div>
-
-                {/* 最新留言预览 */}
-                {latestMsg ? (
-                  <p className="text-xs text-zinc-500 truncate">
-                    {latestMsg.is_anonymous ? "匿名" : latestMsg.from_user}：{latestMsg.content}
-                  </p>
-                ) : (
-                  <p className="text-xs text-zinc-600">还没有留言</p>
-                )}
-
-                {/* 留言数 */}
-                {messages.length > 0 && (
-                  <div className="mt-2 text-xs" style={{ color: "var(--accent)" }}>
-                    💬 {messages.length} 条留言
-                  </div>
-                )}
-              </a>
-            </div>
+              </div>
+              {latest ? (
+                <p className="text-xs text-zinc-500 truncate">
+                  {latest.is_anonymous ? "匿名" : latest.from_user}：{latest.content}
+                </p>
+              ) : (
+                <p className="text-xs text-zinc-600">还没有留言</p>
+              )}
+              {msgs.length > 0 && (
+                <div className="mt-1 sm:mt-2 text-xs" style={{ color: "var(--accent)" }}>
+                  💬 {msgs.length} 条
+                </div>
+              )}
+            </a>
           );
         })}
       </div>
 
-      {/* 留言区（按成员分区） */}
-      <h2 className="text-xl font-bold mb-6">💬 留言板</h2>
+      {/* 留言区 */}
+      <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">💬 留言板</h2>
 
       {MEMBERS_LIST.map((member) => {
-        const messages = allMessages.filter((m) => m.to_user === member.id);
+        const msgs = allMessages.filter((m) => m.to_user === member.id);
         return (
-          <div key={member.id} id={`msg-${member.id}`} className="mb-8">
-            {/* 成员标题 */}
-            <div className="flex items-center gap-3 mb-4">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs uppercase"
-                style={{ background: "var(--accent)", color: "#fff" }}
-              >
-                {member.id[0]}
-              </div>
-              <h3 className="font-bold">{member.id}</h3>
+          <div key={member.id} id={`msg-${member.id}`} className="mb-6 sm:mb-8">
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs uppercase"
+                style={{ background: "var(--accent)", color: "#fff" }}>{member.id[0]}</div>
+              <h3 className="font-bold text-sm sm:text-base">{member.id}</h3>
               <span className="text-xs text-zinc-500">🎂 {member.birthday}</span>
             </div>
 
-            {/* 留言列表 */}
-            <div className="space-y-3 mb-4 ml-11">
-              {messages.length === 0 ? (
-                <p className="text-sm text-zinc-600 py-4">还没有留言，写一条吧 ↓</p>
+            <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4 ml-9 sm:ml-11">
+              {msgs.length === 0 ? (
+                <p className="text-sm text-zinc-600 py-3">还没有留言</p>
               ) : (
-                messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className="p-4 rounded-xl text-sm"
-                    style={{
-                      background: "var(--bg-card)",
-                      border: "1px solid var(--border)",
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-xs text-zinc-400">
-                        {msg.is_anonymous ? "🎭 匿名" : msg.from_user}
-                      </span>
-                      <span className="text-xs text-zinc-600">
-                        {new Date(msg.created_at).toLocaleDateString("zh-CN")}
-                      </span>
+                msgs.map((msg) => (
+                  <div key={msg.id} className="p-3 sm:p-4 rounded-xl text-sm"
+                    style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-xs text-zinc-400">
+                          {msg.is_anonymous ? "🎭 匿名" : msg.from_user}
+                        </span>
+                        <span className="text-xs text-zinc-600">
+                          {new Date(msg.created_at).toLocaleDateString("zh-CN")}
+                        </span>
+                      </div>
+                      {currentUser === msg.from_user && (
+                        <DeleteMessageButton messageId={msg.id} />
+                      )}
                     </div>
-                    <p className="text-zinc-300">{msg.content}</p>
+                    <p className="text-zinc-300 break-words">{msg.content}</p>
                   </div>
                 ))
               )}
             </div>
 
-            {/* 留言表单 */}
-            <MessageForm
-              toUser={member.id}
-              currentUser={currentUser}
-            />
+            {member.id !== currentUser && (
+              <MessageForm toUser={member.id} />
+            )}
+            {member.id === currentUser && (
+              <div className="ml-9 sm:ml-11 text-xs text-zinc-600">（这是你自己）</div>
+            )}
           </div>
         );
       })}
@@ -154,52 +124,25 @@ export default async function MembersPage() {
   );
 }
 
-/** 留言表单（客户端组件） */
-function MessageForm({
-  toUser,
-  currentUser,
-}: {
-  toUser: string;
-  currentUser: string;
-}) {
-  // 不能给自己留言
-  if (toUser === currentUser) {
-    return (
-      <div className="ml-11 text-xs text-zinc-600">
-        （这是你自己，不能给自己留言 😄）
-      </div>
-    );
-  }
-
+/** 留言表单（客户端） */
+function MessageForm({ toUser }: { toUser: string }) {
   return (
-    <form
-      action={sendMessage}
-      className="ml-11 flex gap-2 items-start"
-    >
+    <form action={sendMessage} className="ml-9 sm:ml-11 flex gap-2 items-center flex-wrap">
       <input type="hidden" name="to_user" value={toUser} />
-      <input
-        type="text"
-        name="content"
-        placeholder={`给 ${toUser} 留言...`}
-        required
-        className="flex-1 px-3 py-2 rounded-lg text-sm outline-none"
-        style={{
-          background: "var(--bg-secondary)",
-          border: "1px solid var(--border)",
-          color: "var(--text-primary)",
-        }}
-      />
-      <label className="flex items-center gap-1 text-xs text-zinc-500 cursor-pointer shrink-0 pt-2">
-        <input type="checkbox" name="is_anonymous" value="true" />
-        匿名
+      <div className="flex items-center gap-1 flex-1 min-w-0">
+        <input type="text" name="content" placeholder="留言..." required
+          className="flex-1 min-w-[120px] px-3 py-2 rounded-lg text-sm outline-none"
+          style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text-primary)" }} />
+        <EmojiPicker onSelect={(emoji) => {
+          const input = document.querySelector(`input[name="content"]`) as HTMLInputElement;
+          if (input) { input.value += emoji; input.focus(); }
+        }} />
+      </div>
+      <label className="flex items-center gap-1 text-xs text-zinc-500 cursor-pointer shrink-0">
+        <input type="checkbox" name="is_anonymous" value="true" />匿名
       </label>
-      <button
-        type="submit"
-        className="px-4 py-2 rounded-lg text-sm font-medium shrink-0"
-        style={{ background: "var(--accent)", color: "#fff" }}
-      >
-        发送
-      </button>
+      <button type="submit" className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium shrink-0"
+        style={{ background: "var(--accent)", color: "#fff" }}>发</button>
     </form>
   );
 }
