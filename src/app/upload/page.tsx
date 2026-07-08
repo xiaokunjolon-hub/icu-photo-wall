@@ -3,11 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import { uploadPhoto } from "@/app/actions";
 
-/** 地点搜索建议 */
+/** 高德地点搜索建议 */
 interface PlaceSuggestion {
-  display_name: string;
-  lat: string;
-  lon: string;
+  name: string;
+  district: string;
+  address: string;
 }
 
 export default function UploadPage() {
@@ -23,10 +23,10 @@ export default function UploadPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 搜索地点（防抖）
+  // 搜索地点（高德输入提示）
   const searchPlaces = (query: string) => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    if (query.length < 2) {
+    if (query.length < 1) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
@@ -34,24 +34,28 @@ export default function UploadPage() {
     timerRef.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=zh`
+          `https://restapi.amap.com/v3/assistant/inputtips?key=${process.env.NEXT_PUBLIC_AMAP_KEY}&keywords=${encodeURIComponent(query)}`
         );
         const data = await res.json();
-        setSuggestions(data);
-        setShowSuggestions(data.length > 0);
+        if (data.tips) {
+          const filtered = data.tips.filter((t: { name: string }) => t.name && t.name.length > 0);
+          setSuggestions(filtered);
+          setShowSuggestions(filtered.length > 0);
+        }
       } catch {
         // 搜索失败忽略
       }
-    }, 400);
+    }, 300);
   };
 
   // 选择建议
   const selectPlace = (place: PlaceSuggestion) => {
-    setLocation(place.display_name);
+    const fullAddress = [place.district, place.address].filter(Boolean).join("");
+    setLocation(fullAddress || place.name);
     setShowSuggestions(false);
   };
 
-  // 获取当前位置
+  // 获取当前位置（高德逆地理编码）
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
       setError("浏览器不支持定位");
@@ -61,12 +65,13 @@ export default function UploadPage() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
+          const { longitude, latitude } = pos.coords;
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&accept-language=zh`
+            `https://restapi.amap.com/v3/geocode/regeo?key=${process.env.NEXT_PUBLIC_AMAP_KEY}&location=${longitude.toFixed(6)},${latitude.toFixed(6)}&extensions=base`
           );
           const data = await res.json();
-          if (data.display_name) {
-            setLocation(data.display_name);
+          if (data.regeocode?.formatted_address) {
+            setLocation(data.regeocode.formatted_address);
           }
         } catch {
           setLocation(`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`);
@@ -222,9 +227,12 @@ export default function UploadPage() {
                       key={i}
                       type="button"
                       onClick={() => selectPlace(s)}
-                      className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700/50 border-b border-zinc-800 last:border-0 truncate"
+                      className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700/50 border-b border-zinc-800 last:border-0"
                     >
-                      📍 {s.display_name}
+                      <span className="font-medium">{s.name}</span>
+                      <span className="text-zinc-500 text-xs ml-2 truncate">
+                        {s.district}{s.address}
+                      </span>
                     </button>
                   ))}
                 </div>
