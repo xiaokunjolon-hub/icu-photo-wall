@@ -72,7 +72,6 @@ function LoginForm() {
           >
             ICU
           </div>
-          <p className="text-zinc-500 text-sm mt-3">一群兄弟 · 照片墙</p>
         </div>
 
         {/* 登录表单 */}
