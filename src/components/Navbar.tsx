@@ -13,7 +13,9 @@ export default function Navbar() {
 
   const links = [
     { href: "/", label: "🏠 主页" },
-    { href: "/history", label: "📜 历史照片墙" },
+    { href: "/history", label: "📜 历史" },
+    { href: "/members", label: "👥 兄弟" },
+    { href: "/upload", label: "📸 上传" },
   ];
 
   return (

@@ -8,8 +8,10 @@ interface Photo {
   id: string;
   title: string;
   description: string;
+  location: string;
   image_url: string;
   event_date: string;
+  uploaded_by: string;
   created_at: string;
 }
 
@@ -135,19 +137,25 @@ function PhotoCard({ photo }: { photo: Photo }) {
 
       {/* 信息区 */}
       <div className="p-5">
-        {/* 日期 */}
-        <div className="text-xs mb-2" style={{ color: "var(--accent)" }}>
-          📅 {dateStr}
+        {/* 日期 + 地点 */}
+        <div className="text-xs mb-2 flex items-center gap-3" style={{ color: "var(--accent)" }}>
+          <span>📅 {dateStr}</span>
+          {photo.location && <span>📍 {photo.location}</span>}
         </div>
 
         {/* 标题 */}
         <h3 className="font-bold text-lg mb-2">{photo.title}</h3>
 
-        {/* 备注：什么事件、什么情况 */}
+        {/* 备注 */}
         {photo.description && (
-          <p className="text-zinc-400 text-sm leading-relaxed">
+          <p className="text-zinc-400 text-sm leading-relaxed mb-2">
             {photo.description}
           </p>
+        )}
+
+        {/* 上传人 */}
+        {photo.uploaded_by && (
+          <p className="text-zinc-600 text-xs">上传：{photo.uploaded_by}</p>
         )}
       </div>
     </div>

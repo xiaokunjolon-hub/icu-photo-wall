@@ -1,16 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-
-// 兄弟们的账号（用户名 → 生日密码 MMDD）
-const MEMBERS: Record<string, { password: string }> = {
-  lcy: { password: "1226" },
-  qcy: { password: "0309" },
-  lzx: { password: "0420" },
-  qjk: { password: "1223" },
-  zzy: { password: "1019" },
-  dht: { password: "0127" },
-  zyk: { password: "0302" },
-};
+import { MEMBER_PASSWORDS } from "@/lib/members";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -26,18 +16,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             : "";
         const password = credentials?.password;
 
-        // 查找这个用户名
-        const member = MEMBERS[username];
-        if (!member) {
-          return null; // 用户不存在
+        const expectedPassword = MEMBER_PASSWORDS[username];
+        if (!expectedPassword) {
+          return null;
         }
 
-        // 检查密码（生日 MMDD）
-        if (typeof password === "string" && password === member.password) {
+        if (typeof password === "string" && password === expectedPassword) {
           return { id: username, name: username };
         }
 
-        return null; // 密码错误
+        return null;
       },
     }),
   ],
@@ -51,12 +39,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.name = user.name || "兄弟";
+        token.sub = user.id; // 用户名 id
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.name = token.name as string;
+        session.user.email = token.sub as string;
       }
       return session;
     },

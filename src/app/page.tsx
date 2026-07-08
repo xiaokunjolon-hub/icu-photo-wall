@@ -24,7 +24,7 @@ export default function HomePage() {
       </div>
 
       {/* 快捷入口卡片 */}
-      <div className="grid sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+      <div className="grid sm:grid-cols-3 gap-4 max-w-xl mx-auto">
         {/* 历史时间线 */}
         <a
           href="/history"
@@ -35,22 +35,37 @@ export default function HomePage() {
           }}
         >
           <div className="text-3xl mb-3">📜</div>
-          <h3 className="font-bold mb-1">历史照片墙</h3>
-          <p className="text-zinc-500 text-sm">时间线照片墙，每一张都有故事</p>
+          <h3 className="font-bold mb-1">历史照片</h3>
+          <p className="text-zinc-500 text-sm">时间线，每一张都有故事</p>
         </a>
 
-        {/* 预留：成员列表 */}
-        <div
-          className="block p-6 rounded-xl opacity-50 cursor-not-allowed"
+        {/* 成员 */}
+        <a
+          href="/members"
+          className="block p-6 rounded-xl transition-all hover:scale-[1.02]"
           style={{
             background: "var(--bg-card)",
             border: "1px solid var(--border)",
           }}
         >
           <div className="text-3xl mb-3">👥</div>
-          <h3 className="font-bold mb-1">兄弟成员</h3>
-          <p className="text-zinc-500 text-sm">即将上线</p>
-        </div>
+          <h3 className="font-bold mb-1">兄弟们</h3>
+          <p className="text-zinc-500 text-sm">7 个人，互相留言</p>
+        </a>
+
+        {/* 上传 */}
+        <a
+          href="/upload"
+          className="block p-6 rounded-xl transition-all hover:scale-[1.02]"
+          style={{
+            background: "var(--bg-card)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <div className="text-3xl mb-3">📸</div>
+          <h3 className="font-bold mb-1">上传照片</h3>
+          <p className="text-zinc-500 text-sm">分享新回忆</p>
+        </a>
       </div>
 
       {/* 底部 */}
