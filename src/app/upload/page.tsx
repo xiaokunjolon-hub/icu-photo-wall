@@ -1,12 +1,95 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { uploadPhoto } from "@/app/actions";
+
+/** 地点搜索建议 */
+interface PlaceSuggestion {
+  display_name: string;
+  lat: string;
+  lon: string;
+}
 
 export default function UploadPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+
+  // 地点搜索
+  const [location, setLocation] = useState("");
+  const [suggestions, setSuggestions] = useState<PlaceSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 搜索地点（防抖）
+  const searchPlaces = (query: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (query.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    timerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=zh`
+        );
+        const data = await res.json();
+        setSuggestions(data);
+        setShowSuggestions(data.length > 0);
+      } catch {
+        // 搜索失败忽略
+      }
+    }, 400);
+  };
+
+  // 选择建议
+  const selectPlace = (place: PlaceSuggestion) => {
+    setLocation(place.display_name);
+    setShowSuggestions(false);
+  };
+
+  // 获取当前位置
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setError("浏览器不支持定位");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&accept-language=zh`
+          );
+          const data = await res.json();
+          if (data.display_name) {
+            setLocation(data.display_name);
+          }
+        } catch {
+          setLocation(`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`);
+        }
+        setLocating(false);
+      },
+      () => {
+        setError("无法获取位置，请手动输入");
+        setLocating(false);
+      }
+    );
+  };
+
+  // 点击外部关闭建议
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -100,19 +183,64 @@ export default function UploadPage() {
           />
         </div>
 
-        {/* 地点 */}
-        <div>
+        {/* 地点（带搜索） */}
+        <div className="relative">
           <label className="block text-sm text-zinc-400 mb-1.5">地点</label>
-          <input
-            type="text"
-            name="location"
-            className={inputClass}
-            style={{
-              background: "var(--bg-secondary)",
-              border: "1px solid var(--border)",
-              color: "var(--text-primary)",
-            }}
-          />
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <input
+                ref={inputRef}
+                type="text"
+                name="location"
+                value={location}
+                onChange={(e) => {
+                  setLocation(e.target.value);
+                  searchPlaces(e.target.value);
+                }}
+                onFocus={() => {
+                  if (suggestions.length > 0) setShowSuggestions(true);
+                }}
+                className={inputClass}
+                placeholder="输入地点名称搜索"
+                style={{
+                  background: "var(--bg-secondary)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-primary)",
+                }}
+              />
+              {/* 搜索建议下拉 */}
+              {showSuggestions && (
+                <div
+                  className="absolute z-10 w-full mt-1 rounded-lg overflow-hidden"
+                  style={{
+                    background: "var(--bg-card)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  {suggestions.map((s, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => selectPlace(s)}
+                      className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700/50 border-b border-zinc-800 last:border-0 truncate"
+                    >
+                      📍 {s.display_name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={getCurrentLocation}
+              disabled={locating}
+              className="px-3 py-2.5 rounded-lg text-sm font-medium shrink-0 disabled:opacity-50"
+              style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text-primary)" }}
+              title="使用当前位置"
+            >
+              {locating ? "⏳" : "📍"}
+            </button>
+          </div>
         </div>
 
         {/* 描述 */}
