@@ -115,6 +115,30 @@ export async function sendMessage(formData: FormData) {
   revalidatePath("/");
 }
 
+/** 编辑照片信息 */
+export async function updatePhoto(photoId: string, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.name) throw new Error("请先登录");
+
+  const title = formData.get("title") as string;
+  const location = formData.get("location") as string;
+  const event_date = formData.get("event_date") as string;
+  const description = formData.get("description") as string;
+
+  if (!title || !event_date) throw new Error("标题和日期必填");
+
+  const supabase = createServerClient();
+  const { error } = await supabase
+    .from("photos")
+    .update({ title, location: location || "", event_date, description: description || "" })
+    .eq("id", photoId);
+
+  if (error) throw new Error(`更新失败: ${error.message}`);
+
+  revalidatePath("/history");
+  revalidatePath("/history/edit");
+}
+
 /** 删除留言 */
 export async function deleteMessage(messageId: string) {
   const session = await auth();
