@@ -5,16 +5,11 @@ export default function HomePage() {
       <div className="text-center mb-20">
         {/* ICU Logo */}
         <div className="mb-8">
-          <span
-            className="inline-block text-7xl font-black px-8 py-3 rounded-xl tracking-wider"
-            style={{
-              background: "var(--accent)",
-              color: "#fff",
-              transform: "skewX(-5deg)",
-            }}
-          >
-            ICU
-          </span>
+          <img
+            src="/icu-logo.png"
+            alt="ICU"
+            className="h-36 mx-auto"
+          />
         </div>
 
         <h1 className="text-2xl font-bold mb-3">兄弟们的专属地盘</h1>

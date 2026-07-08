@@ -30,18 +30,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* 左侧 Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <span
-            style={{
-              background: "var(--accent)",
-              color: "#fff",
-              padding: "2px 8px",
-              borderRadius: "4px",
-              fontSize: "14px",
-            }}
-          >
-            ICU
-          </span>
-          <span className="hidden sm:inline">兄弟</span>
+          <img src="/icu-logo.png" alt="ICU" className="h-9" />
         </Link>
 
         {/* 中间导航 */}

@@ -62,16 +62,11 @@ function LoginForm() {
       <div className="w-full max-w-sm mx-4">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div
-            className="inline-block text-5xl font-black mb-3 px-6 py-2 rounded-lg"
-            style={{
-              background: "var(--accent)",
-              color: "#fff",
-              transform: "skewX(-5deg)",
-            }}
-          >
-            ICU
-          </div>
+          <img
+            src="/icu-logo.png"
+            alt="ICU"
+            className="h-28 mx-auto"
+          />
         </div>
 
         {/* 登录表单 */}
