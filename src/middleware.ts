@@ -28,6 +28,6 @@ export const config = {
      * - _next/image (图片优化)
      * - favicon.ico (图标)
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|\\.png|\\.jpg|\\.jpeg|\\.svg|\\.gif|\\.webp|\\.ico).*)",
   ],
 };
