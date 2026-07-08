@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import { createServerClient, isSupabaseConfigured } from "@/lib/supabase";
-import { DeletePhotoButton } from "@/components/DeleteButtons";
 
 export const dynamic = "force-dynamic";
 
@@ -114,13 +113,10 @@ function PhotoCard({ photo, currentUser }: { photo: Photo; currentUser: string }
             <p className="text-zinc-600 text-xs">上传：{photo.uploaded_by}</p>
           </div>
           {canDelete && (
-            <div className="flex items-center gap-1">
-              <a href={`/history/edit/${photo.id}`}
-                className="text-xs px-2 py-1 rounded text-zinc-500 hover:text-white transition-colors">
-                ✏️
-              </a>
-              <DeletePhotoButton photoId={photo.id} imageUrl={photo.image_url} />
-            </div>
+            <a href={`/history/edit/${photo.id}`}
+              className="text-xs px-2 py-1 rounded text-zinc-500 hover:text-white transition-colors">
+              ✏️ 编辑
+            </a>
           )}
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updatePhoto } from "@/app/actions";
+import { updatePhoto, deletePhoto } from "@/app/actions";
 import { useRouter } from "next/navigation";
 
 interface Photo {
@@ -70,6 +70,8 @@ export default function EditForm({ photo }: { photo: Photo }) {
 
       {error && <div className="text-red-400 text-sm p-3 rounded-lg bg-red-400/10">{error}</div>}
 
+      <DeleteSection photoId={photo.id} imageUrl={photo.image_url} />
+
       <div className="flex gap-3">
         <button type="button" onClick={() => router.back()}
           className="flex-1 py-2.5 rounded-lg text-sm border border-zinc-700 text-zinc-400">
@@ -82,5 +84,34 @@ export default function EditForm({ photo }: { photo: Photo }) {
         </button>
       </div>
     </form>
+  );
+}
+
+function DeleteSection({ photoId, imageUrl }: { photoId: string; imageUrl: string }) {
+  const [confirming, setConfirming] = useState(false);
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    if (!confirming) { setConfirming(true); return; }
+    try {
+      await deletePhoto(photoId, imageUrl);
+      router.push("/history");
+    } catch {
+      setConfirming(false);
+    }
+  };
+
+  return (
+    <div className="border-t pt-4" style={{ borderColor: "var(--border)" }}>
+      <button
+        type="button"
+        onClick={handleDelete}
+        className={`text-sm px-4 py-2 rounded-lg transition-colors ${
+          confirming ? "bg-red-600 text-white" : "text-red-400 hover:text-red-300 border border-zinc-700"
+        }`}
+      >
+        {confirming ? "确认删除？" : "🗑️ 删除照片"}
+      </button>
+    </div>
   );
 }
