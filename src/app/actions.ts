@@ -43,7 +43,7 @@ export async function uploadPhoto(formData: FormData) {
 
   await r2.send(
     new PutObjectCommand({
-      Bucket: "icu-photos",
+      Bucket: "icu",
       Key: fileName,
       Body: fileBuffer,
       ContentType: file.type,
